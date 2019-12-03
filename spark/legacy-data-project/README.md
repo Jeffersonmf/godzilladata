@@ -9,7 +9,7 @@
 
 Is the main project responsible for big data. 
 
-# The first challenge to enrich data and experiments
+# The first challenge to enrich data and insight experiments
 
 One of the tasks of Data Engineering at Swap is to deal with the sheer amount of user behavior information and our partners systems.
 All of this data is collected and stored for future analysis and continuous improvement of our services and products.
