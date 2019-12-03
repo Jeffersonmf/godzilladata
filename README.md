@@ -59,7 +59,7 @@ Preparing this pure and unstructured data into future enriched information ready
 
 ![Drag Racing](header.png)
 
-# Requisitos Minimos
+# Minimum requirements
 
 Technology | Version
 ------- | --------
