@@ -1,0 +1,82 @@
+{
+  "name": "MyClass",
+  "type": "record",
+  "namespace": "io.contaswap.bigdata.schema.avro",
+  "fields": [
+    {
+      "name": "_source",
+      "type": {
+        "name": "_source",
+        "type": "record",
+        "fields": [
+          {
+            "name": "_host",
+            "type": "string"
+          },
+          {
+            "name": "_logtype",
+            "type": "string"
+          },
+          {
+            "name": "_mac",
+            "type": "string"
+          },
+          {
+            "name": "_tag",
+            "type": {
+              "type": "array",
+              "items": "string"
+            }
+          },
+          {
+            "name": "_file",
+            "type": "string"
+          },
+          {
+            "name": "_line",
+            "type": "string"
+          },
+          {
+            "name": "_ts",
+            "type": "long"
+          },
+          {
+            "name": "_app",
+            "type": "string"
+          },
+          {
+            "name": "_ip",
+            "type": "string"
+          },
+          {
+            "name": "_ipremote",
+            "type": "string"
+          },
+          {
+            "name": "level",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          {
+            "name": "logsource",
+            "type": "string"
+          },
+          {
+            "name": "program",
+            "type": "string"
+          },
+          {
+            "name": "message",
+            "type": "string"
+          },
+          {
+            "name": "_lid",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ]
+}
