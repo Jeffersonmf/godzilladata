@@ -2,7 +2,7 @@
 ![POD](https://img.shields.io/badge/language-Scala-black.svg)
 ![POD](https://img.shields.io/badge/Spark-red.svg)
 ![POD](https://img.shields.io/badge/Amazon-EMR-orange.svg)
-[![POD](https://img.shields.io/badge/license-MIT-lightgrey.svg)](./LICENSE)
+![POD](https://img.shields.io/badge/license-MIT-lightgrey.svg)
 ![SBT compatible](https://img.shields.io/badge/SBT-compatible-4BC51D.svg?style=flat)
 
 # Godzilla
