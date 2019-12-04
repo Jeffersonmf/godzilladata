@@ -1,7 +1,7 @@
 {
-  "name": "MyClass",
+  "name": "LegacyLogDNA",
   "type": "record",
-  "namespace": "io.contaswap.bigdata.schema.avro",
+  "namespace": "io.contaswap.bigdata.legacylogdna",
   "fields": [
     {
       "name": "_source",

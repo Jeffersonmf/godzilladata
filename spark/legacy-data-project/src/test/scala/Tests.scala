@@ -1,7 +1,5 @@
 
-import _root_.exceptions.{LoadDataException, PurgeDataException}
 import config.Environment
-import core.EnrichmentEngine
 import org.scalatest._
 
 class Tests extends FlatSpec with Matchers {
