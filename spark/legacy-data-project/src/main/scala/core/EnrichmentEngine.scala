@@ -3,12 +3,11 @@ package core
 import java.io.File
 
 import config.Environment
-import contracts.EnrichmentEngineContract
 import exceptions.LoadDataException
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import utils.Utils
 
-object EnrichmentEngine extends EnrichmentEngineContract {
+object EnrichmentEngine {
 
   val spark = sparkContextInitialize()
 
@@ -23,7 +22,7 @@ object EnrichmentEngine extends EnrichmentEngineContract {
     //TODO: Calls here the history modules.
   }
 
-  override def chargeSourceData(): Boolean = {
+  def chargeSourceData(): Boolean = {
 
     var processStatus: Boolean = false
     val enrichmentFiles = Utils.getListOfFiles(Environment.getJsonSourceFolder())

@@ -1,7 +1,7 @@
 {
   "name": "LegacyLogDNA",
   "type": "record",
-  "namespace": "io.contaswap.bigdata.legacylogdna",
+  "namespace": "io.contaswap.bigdata",
   "fields": [
     {
       "name": "_source",

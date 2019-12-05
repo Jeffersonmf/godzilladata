@@ -7,6 +7,7 @@ import colossus.protocols.http.UrlParsing._
 import colossus.protocols.http.server.RequestHandler
 import colossus.service.Callback
 import colossus.service.GenRequestHandler.PartialHandler
+import services.ServicesImpl
 
 class HttpRouterHandler(context: ServerContext) extends RequestHandler(context) {
 
@@ -17,8 +18,14 @@ class HttpRouterHandler(context: ServerContext) extends RequestHandler(context) 
     case request @ Get on Root / "monitoring" => {
       Callback.successful(request.ok("The Big Data Charger is up!!!"))
     }
-    case request @ Get on Root / "get" / "charger" / "by-all" => {
-      Callback.successful(request.ok("The Charger vault is started!!!!"))
+    case request @ Get on Root / "get" / "charger" / "all" => {
+      Callback.successful(request.ok(ServicesImpl.chargeAll()))
+    }
+    case request @ Get on Root / "get" / "charger" / ano / mes => {
+      Callback.successful(request.ok(ServicesImpl.chargeByMonth(ano, mes)))
+    }
+    case request @ Get on Root / "get" / "charger" / ano => {
+      Callback.successful(request.ok(ServicesImpl.chargeByYear(ano)))
     }
   }
 }
