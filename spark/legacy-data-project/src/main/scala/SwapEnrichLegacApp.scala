@@ -3,7 +3,6 @@ import colossus.IOSystem
 import colossus.core.InitContext
 import colossus.protocols.http.server.{HttpServer, Initializer}
 import config.Environment
-import core.EnrichmentEngine
 import routers.HttpRouterHandler
 
 object SwapEnrichLegacApp extends App {
@@ -12,7 +11,7 @@ object SwapEnrichLegacApp extends App {
   implicit val ioSystem = IOSystem()
 
   //Initializing Enrichment Data with Spark.
-  EnrichmentEngine.chargeSourceData()
+  //EnrichmentEngine.chargeSourceData()
 
   //Initializing File Watcher to the Enrichment future data.
   val directoryPath = Environment.getJsonSourceFolder()

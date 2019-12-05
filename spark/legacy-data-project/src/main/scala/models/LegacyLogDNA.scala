@@ -3,7 +3,6 @@ package models
 import java.util.{HashMap, List, Map}
 
 import com.fasterxml.jackson.annotation._
-import com.google.inject.internal.util.$Nullable
 import org.apache.commons.lang.builder.{EqualsBuilder, HashCodeBuilder, ToStringBuilder}
 
 import scala.beans.BeanProperty
@@ -228,4 +227,4 @@ class Source {
   }
 }
 
-case class ResultParquet(ano: String, mes: String, dia: String, id: String, description: String, @$Nullable count: Long)
+case class ResultParquet(_host: String, _logtype: String, _mac: String, _tag: List[String], _file: String, _line: String, _ts: Long, _app: String, _ip: String, _ipremote: String, level: String, _lid: String)

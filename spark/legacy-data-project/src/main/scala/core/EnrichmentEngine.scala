@@ -22,26 +22,24 @@ object EnrichmentEngine {
     //TODO: Calls here the history modules.
   }
 
-  def chargeSourceData(): Boolean = {
+  def chargeSourceData(pathComplement: String): Boolean = {
 
     var processStatus: Boolean = false
-    val enrichmentFiles = Utils.getListOfFiles(Environment.getJsonSourceFolder())
+    val sourcePath = Environment.getJsonSourceFolder()
+      .concat(if (pathComplement != null) pathComplement else "")
+    val destPath = Environment.getParquetDestinationFolder()
+
+    val enrichmentFiles = Utils.getListOfFiles(sourcePath)
 
     try {
-
-      if (!Utils.isSourceFolderEmpty(Environment.getJsonSourceFolder())) {
-        val df = spark.read.format("json").json(Environment.getJsonSourceFolder())
+      if (!Utils.isSourceFolderEmpty(sourcePath)) {
+        val df = spark.read.format("json").json(sourcePath)
 
         df.toDF()
-//          .withColumn("device_sent_timestamp", col("device_sent_timestamp"))
-//          .withColumn("year", year(from_unixtime(col("device_sent_timestamp"))))
-//          .withColumn("month", month(from_unixtime(col("device_sent_timestamp"))))
-//          .withColumn("day", dayofmonth(from_unixtime(col("device_sent_timestamp"))))
-//          .withColumn("hour", hour(from_unixtime(col("device_sent_timestamp"))))
           .write
-//          .partitionBy("year", "month", "day", "hour")
+//        .partitionBy("year", "month", "day", "hour")
           .mode(SaveMode.Append)
-          .parquet(Environment.getParquetDestinationFolder())
+          .parquet(destPath)
 
         processStatus = true
       }
