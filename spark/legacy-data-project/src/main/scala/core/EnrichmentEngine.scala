@@ -25,8 +25,7 @@ object EnrichmentEngine {
   def chargeSourceData(pathComplement: String): Boolean = {
 
     var processStatus: Boolean = false
-    val sourcePath = Environment.getJsonSourceFolder()
-      .concat(if (pathComplement != null) pathComplement else "")
+    val sourcePath = Environment.getJsonSourceFolder().concat(if (pathComplement != null) pathComplement else "")
     val destPath = Environment.getParquetDestinationFolder()
 
     val enrichmentFiles = Utils.getListOfFiles(sourcePath)

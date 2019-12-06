@@ -24,16 +24,16 @@ class HttpRouterHandler(context: ServerContext) extends RequestHandler(context) 
     case request @ Get on Root / "monitoring" => {
       Callback.successful(request.ok("The Big Data Charger is up!!!"))
     }
-    case request @ Get on Root / "get" / "charger" / "all" => {
+    case request @ Get on Root / "charger" / "all" => {
       Callback.successful(request.ok(ServicesImpl.chargeAll()))
     }
-    case request @ Get on Root / "get" / "charger" / ano / mes => {
+    case request @ Get on Root / "charger" / ano / mes => {
       validate(ano,mes) match {
         case true => Callback.successful(request.ok(ServicesImpl.chargeByMonth(ano, mes)))
         case false => Callback.successful(request.ok("Path is invalid !!!"))
       }
     }
-    case request @ Get on Root / "get" / "charger" / ano => {
+    case request @ Get on Root / "charger" / ano => {
       Callback.successful(request.ok(ServicesImpl.chargeByYear(ano)))
     }
   }
