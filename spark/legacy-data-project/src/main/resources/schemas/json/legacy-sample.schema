@@ -9,7 +9,7 @@
           "type": "string"
         },
         "_logtype": {
-          "type": "string"
+          "type": "strinog"
         },
         "_mac": {
           "type": "string"

@@ -15,4 +15,16 @@ object Environment {
   def getPurgeDestinationFolder(): String = {
     conf.getString("Configuration.Enrichment.Purge_DestinationFolder")
   }
+
+  def runningMode(): Boolean = {
+    conf.getBoolean("Configuration.Setup.Running_Mode")
+  }
+
+  def aws_access_key(): String = {
+    conf.getString("Configuration.AWS.fs.s3a.access.key")
+  }
+
+  def aws_secret_key(): String = {
+    conf.getString("Configuration.AWS.fs.s3a.secret.key")
+  }
 }

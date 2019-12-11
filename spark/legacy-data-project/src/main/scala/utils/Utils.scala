@@ -14,25 +14,24 @@ object Utils {
     }
   }
 
-//  def moveListOfFiles(source: String, destination: String, listFiles: List[File]): Boolean = {
-//    try {
-//      for (file <- listFiles) {
-//        val path = Files.move(
-//          Paths.get(source.concat("/").concat(file.getName())),
-//          Paths.get(destination.concat("/").concat(file.getName())),
-//          StandardCopyOption.REPLACE_EXISTING
-//        )
-//      }
-//      true
-//    } catch {
-//      case e: Exception => {
-//        false
-//      }
-//    }
-//  }
+  def moveListOfFiles(source: String, destination: String, listFiles: List[File]): Boolean = {
+    try {
+      for (file <- listFiles) {
+        val path = Files.move(
+          Paths.get(source.concat("/").concat(file.getName())),
+          Paths.get(destination.concat("/").concat(file.getName())),
+          StandardCopyOption.REPLACE_EXISTING
+        )
+      }
+      true
+    } catch {
+      case e: Exception => {
+        false
+      }
+    }
+  }
 
   def isSourceFolderEmpty(source: String): Boolean = {
-
     return if (getListOfFiles(source).isEmpty) true else false
   }
 }
