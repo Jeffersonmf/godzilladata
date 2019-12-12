@@ -34,4 +34,8 @@ object Utils {
   def isSourceFolderEmpty(source: String): Boolean = {
     return if (getListOfFiles(source).isEmpty) true else false
   }
+
+  def isEmptyOrNull(stringValue: String): Boolean = {
+    if(stringValue != null && !stringValue.isEmpty()) false else true
+  }
 }

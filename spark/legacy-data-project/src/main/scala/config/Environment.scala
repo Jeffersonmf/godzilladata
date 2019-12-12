@@ -16,7 +16,7 @@ object Environment {
     conf.getString("Configuration.Enrichment.Purge_DestinationFolder")
   }
 
-  def runningMode(): Boolean = {
+  def isRunningAWSMode(): Boolean = {
     conf.getBoolean("Configuration.Setup.Running_Mode")
   }
 
@@ -27,4 +27,13 @@ object Environment {
   def aws_secret_key(): String = {
     conf.getString("Configuration.AWS.fs.s3a.secret.key")
   }
+
+  def get_AWS_JsonSourceFolder(): String = {
+    conf.getString("Configuration.AWS.S3_SourceFolder")
+  }
+
+  def get_AWS_ParquetDestinationFolder(): String = {
+    conf.getString("Configuration.AWS.S3_Parquet_DestinationFolder")
+  }
+
 }
