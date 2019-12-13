@@ -80,7 +80,7 @@ object EnrichmentEngine {
         df.toDF()
           .write
           .mode(SaveMode.Append)
-          .parquet("s3a://" + Environment.aws_access_key() + ":" + Environment.aws_secret_key() + "@swap-bigdata/legacy/logdna.parquet")    //Write
+          .parquet("s3a://swap-bigdata/legacy/logdna.parquet")    //Write
           //.parquet("s3a://swap-bigdata/legacy/")    //Write
 
 
