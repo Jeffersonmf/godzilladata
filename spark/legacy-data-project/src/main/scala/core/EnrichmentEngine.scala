@@ -1,12 +1,16 @@
 package core
 
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.auth.BasicAWSCredentials
+import java.io.File
+
 import config.Environment
 import exceptions.LoadDataException
-import org.apache.spark.sql.{SaveMode, SparkSession}
-import java.io.File
+import org.apache.spark.sql
+import org.apache.spark.sql._
+import org.apache.spark.sql.functions.{lit, max, row_number}
+import org.apache.spark.sql.types.{DateType, StringType}
 import utils.Utils
+
+import scala.reflect.internal.util.TableDef.Column
 
 object EnrichmentEngine {
 
@@ -52,21 +56,25 @@ object EnrichmentEngine {
       try {
       if (!Utils.isSourceFolderEmpty(sourcePath)) {
         val df = spark.sqlContext.read.json(sourcePath)
+        df.withColumn("_source._ts",  df.col("_source._ts").cast(sql.types.LongType))
         df.registerTempTable("dataFrame")
 
-        spark.sql("SELECT _source._host as host, " +
+        val dftemp = spark.sql("SELECT _source._host as host, " +
           "_source._logtype as logtype, " +
           "_source._mac as mac, " +
           "_source._file as file, " +
           "_source._line as line, " +
           "_source._ts as ts, " +
+          "from_unixtime(_source._ts / 1000, \"yyyy-MM-dd HH:mm:ss.SSSS\") as datetime, " +
           "_source._app as app," +
           "_source._ip as ip," +
           "_source._ipremote as ipremote," +
           "_source.level as level," +
           "_source._lid as lid," +
-          "_source._tag[0] as tag FROM dataFrame").toDF()
-          .write.mode(SaveMode.Append).parquet(Environment.get_AWS_ParquetDestinationFolder())
+          "_source._tag[0] as tag FROM dataFrame")
+          .withColumn("account", lit(null).cast(StringType))
+          .toDF()
+          .write.mode(SaveMode.Append).parquet(destPath)
 
         processStatus = true
       }

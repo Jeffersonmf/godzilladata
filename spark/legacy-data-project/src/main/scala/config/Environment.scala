@@ -35,5 +35,4 @@ object Environment {
   def get_AWS_ParquetDestinationFolder(): String = {
     conf.getString("Configuration.AWS.S3_Parquet_DestinationFolder")
   }
-
 }
