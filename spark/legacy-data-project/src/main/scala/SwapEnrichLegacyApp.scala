@@ -5,7 +5,7 @@ import colossus.protocols.http.server.{HttpServer, Initializer}
 import config.Environment
 import routers.HttpRouterHandler
 
-object SwapEnrichLegacApp extends App {
+object SwapEnrichLegacyApp extends App {
 
   implicit val actorSystem = ActorSystem()
   implicit val ioSystem = IOSystem()

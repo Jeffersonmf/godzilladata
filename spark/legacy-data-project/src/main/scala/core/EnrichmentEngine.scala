@@ -6,11 +6,9 @@ import config.Environment
 import exceptions.LoadDataException
 import org.apache.spark.sql
 import org.apache.spark.sql._
-import org.apache.spark.sql.functions.{lit, max, row_number}
-import org.apache.spark.sql.types.{DateType, StringType}
+import org.apache.spark.sql.functions.lit
+import org.apache.spark.sql.types.StringType
 import utils.Utils
-
-import scala.reflect.internal.util.TableDef.Column
 
 object EnrichmentEngine {
 
@@ -71,7 +69,7 @@ object EnrichmentEngine {
           "_source._ipremote as ipremote," +
           "_source.level as level," +
           "_source._lid as lid," +
-          "_source._tag[0] as tag FROM dataFrame")
+          "ifnull(_source._tag[0], 'tag') as tag FROM dataFrame")
           .withColumn("account", lit(null).cast(StringType))
           .toDF()
           .write.mode(SaveMode.Append).parquet(destPath)
