@@ -23,7 +23,6 @@ libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "2.3.0",
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.8"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % "test"
 
-mainClass in Compile := Some("com.company.MyClass")
-mainClass in assembly := Some("com.company.MyClass")
-mainClass in(Compile, run) := Some("com.company.MyClass")
-mainClass in(Compile, packageBin) := Some("com.company.MyClass")
+//mainClass in Compile := Some("com.company.MyClass")
+//mainClass in(Compile, run) := Some("com.company.MyClass")
+//mainClass in(Compile, packageBin) := Some("com.company.MyClass")

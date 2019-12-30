@@ -55,7 +55,7 @@ object EnrichmentEngine {
       if (!Utils.isSourceFolderEmpty(sourcePath)) {
         val df = spark.sqlContext.read.json(sourcePath)
         df.withColumn("_source._ts",  df.col("_source._ts").cast(sql.types.LongType))
-        df.registerTempTable("dataFrame")
+        df.createOrReplaceTempView("dataFrame")
 
         val dftemp = spark.sql("SELECT _source._host as host, " +
           "_source._logtype as logtype, " +
@@ -72,7 +72,9 @@ object EnrichmentEngine {
           "ifnull(_source._tag[0], 'tag') as tag FROM dataFrame")
           .withColumn("account", lit(null).cast(StringType))
           .toDF()
-          .write.mode(SaveMode.Append).parquet(destPath)
+          .write.mode(SaveMode.Append)
+          //.partitionBy("logtype")
+          .parquet(destPath)
 
         processStatus = true
       }
