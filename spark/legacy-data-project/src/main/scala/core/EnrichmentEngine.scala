@@ -9,12 +9,16 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.StringType
 import utils.Utils
+import org.apache.spark.sql.functions.when
+import org.apache.spark.sql
+import org.apache.spark.sql.functions._
 
 object EnrichmentEngine {
 
   val spark = sparkContextInitialize()
   this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
   this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
+
 
   private def sparkContextInitialize(): SparkSession = {
     SparkSession.builder
@@ -43,6 +47,8 @@ object EnrichmentEngine {
   }
 
   private def processInAWS(path: String): Boolean = {
+    // For implicit conversions like converting RDDs to DataFrames
+    import spark.implicits._
 
     var processStatus: Boolean = false
 
@@ -57,6 +63,10 @@ object EnrichmentEngine {
         df.withColumn("_source._ts",  df.col("_source._ts").cast(sql.types.LongType))
         df.createOrReplaceTempView("dataFrame")
 
+        val dfFinal = df.select(col("*"), when(col("gender") === "M","Male")
+          .when(col("gender") === "F","Female")
+          .otherwise("Unknown").alias("new_gender"))
+
         val dftemp = spark.sql("SELECT _source._host as host, " +
           "_source._logtype as logtype, " +
           "_source._mac as mac, " +
@@ -69,7 +79,7 @@ object EnrichmentEngine {
           "_source._ipremote as ipremote," +
           "_source.level as level," +
           "_source._lid as lid," +
-          "ifnull(_source._tag[0], 'tag') as tag FROM dataFrame")
+          "_source._tag[0] as tag FROM dataFrame")
           .withColumn("account", lit(null).cast(StringType))
           .toDF()
           .write.mode(SaveMode.Append)
