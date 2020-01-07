@@ -9,16 +9,12 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.StringType
 import utils.Utils
-import org.apache.spark.sql.functions.when
-import org.apache.spark.sql
-import org.apache.spark.sql.functions._
 
 object EnrichmentEngine {
 
   val spark = sparkContextInitialize()
   this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
   this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
-
 
   private def sparkContextInitialize(): SparkSession = {
     SparkSession.builder
@@ -48,7 +44,6 @@ object EnrichmentEngine {
 
   private def processInAWS(path: String): Boolean = {
     // For implicit conversions like converting RDDs to DataFrames
-    import spark.implicits._
 
     var processStatus: Boolean = false
 
@@ -61,11 +56,11 @@ object EnrichmentEngine {
       if (!Utils.isSourceFolderEmpty(sourcePath)) {
         val df = spark.sqlContext.read.json(sourcePath)
         df.withColumn("_source._ts",  df.col("_source._ts").cast(sql.types.LongType))
+        df.withColumn("_source._host", df.col("_source._host"))
         df.createOrReplaceTempView("dataFrame")
 
-        val dfFinal = df.select(col("*"), when(col("gender") === "M","Male")
-          .when(col("gender") === "F","Female")
-          .otherwise("Unknown").alias("new_gender"))
+//        val dfFiltered = df.select(col(""), when(col("host") === "NULL","")
+//          .when(col("tag") === "NULL",""))
 
         val dftemp = spark.sql("SELECT _source._host as host, " +
           "_source._logtype as logtype, " +
@@ -78,8 +73,8 @@ object EnrichmentEngine {
           "_source._ip as ip," +
           "_source._ipremote as ipremote," +
           "_source.level as level," +
-          "_source._lid as lid," +
-          "_source._tag[0] as tag FROM dataFrame")
+          "_source._lid as lid" +
+          " FROM dataFrame")
           .withColumn("account", lit(null).cast(StringType))
           .toDF()
           .write.mode(SaveMode.Append)
@@ -131,6 +126,35 @@ object EnrichmentEngine {
 
       if (processStatus)
         updateHistoryOfExecution(enrichmentFiles)
+    }
+
+    processStatus
+  }
+
+  def deleteSourceData(complementPath: String): Boolean = {
+    var processStatus: Boolean = false
+    val destPath = Environment.get_AWS_ParquetDestinationFolder()
+
+    try {
+
+      val df = spark.read.format("parquet")
+        .load(destPath)
+        .createTempView("logdna_datalake")
+
+      val dftemp = spark.sql("SELECT * FROM logdna_datalake where datetime not like '%2019-11%'").toDF()
+//        .write.mode(SaveMode.Overwrite)
+//        .parquet(destPath)
+
+      val qtde = dftemp.count()
+
+      processStatus = true
+
+    } catch {
+      case e: Exception => {
+        throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
+      }
+    } finally {
+      processStatus
     }
 
     processStatus

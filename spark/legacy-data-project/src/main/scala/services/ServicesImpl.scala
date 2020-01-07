@@ -26,17 +26,17 @@ object ServicesImpl extends ServicesOperations {
 
     val json = ""
 
-//    typeFilter match {
-//      case "account" => {
-//        //json = parse2Json(mappingByAccount(account), "browser_family", "count")
-//      };
-//      case "Legacy" => {
-//        json = parse2Json(EnrichmentEngine.mappingByDevices(anonymousID), "device_family", "count")
-//      };
-//      case _ => {
-//        json = new Gson().toJson(EnrichmentEngine.loadSessionByUser(anonymousID))
-//      };
-//    }
+    //    typeFilter match {
+    //      case "account" => {
+    //        //json = parse2Json(mappingByAccount(account), "browser_family", "count")
+    //      };
+    //      case "Legacy" => {
+    //        json = parse2Json(EnrichmentEngine.mappingByDevices(anonymousID), "device_family", "count")
+    //      };
+    //      case _ => {
+    //        json = new Gson().toJson(EnrichmentEngine.loadSessionByUser(anonymousID))
+    //      };
+    //    }
 
     json
   }
@@ -57,4 +57,13 @@ object ServicesImpl extends ServicesOperations {
   }
 
   override def chargeAll(): String = {""}
+
+  override def deleteDataByMonth(ano: String, mes: String): String = {
+    val complementPath = ano.concat("/").concat(mes).concat("/")
+
+    EnrichmentEngine.deleteSourceData(complementPath) match {
+      case true => "{Processed: \"OK\"}"
+      case false => "{Processed: \"ERROR\"}"
+    }
+  }
 }

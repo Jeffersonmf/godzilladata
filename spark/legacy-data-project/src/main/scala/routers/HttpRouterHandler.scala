@@ -36,5 +36,8 @@ class HttpRouterHandler(context: ServerContext) extends RequestHandler(context) 
     case request @ Get on Root / "charger" / ano => {
       Callback.successful(request.ok(ServicesImpl.chargeByYear(ano)))
     }
+    case request @ Get on Root / "delete" / ano / mes => {
+      Callback.successful(request.ok(ServicesImpl.deleteDataByMonth(ano, mes)))
+    }
   }
 }
