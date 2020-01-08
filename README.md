@@ -4,7 +4,7 @@
 
 Is the main project responsible for big data. 
 
-![Macro Big Data Flow](Big Data Macro Flow.svg)
+![Macro Big Data Flow](Big Data Macro Flow.jpg)
 
 # The first challenge to enrich data and insight experiments
 
