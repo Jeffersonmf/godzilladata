@@ -1,4 +1,4 @@
-![POD](https://img.shields.io/badge/version-v1.0.0-blue.svg)![POD](https://img.shields.io/badge/language-Scala-black.svg)![POD](https://img.shields.io/badge/platform-Spark-red.svg)![POD](https://img.shields.io/badge/Amazon-EMR-orange.svg)![POD](https://img.shields.io/badge/license-MIT-lightgrey.svg)![SBT compatible](https://img.shields.io/badge/SBT-compatible-4BC51D.svg?style=flat)
+![POD](https://img.shields.io/badge/version-v1.0.0-blue.svg) ![POD](https://img.shields.io/badge/language-Scala-black.svg) ![POD](https://img.shields.io/badge/platform-Spark-red.svg) ![POD](https://img.shields.io/badge/Amazon-EMR-orange.svg) ![POD](https://img.shields.io/badge/license-MIT-lightgrey.svg) ![SBT compatible](https://img.shields.io/badge/SBT-compatible-4BC51D.svg?style=flat)
 
 # Godzilla
 
