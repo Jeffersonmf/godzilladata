@@ -59,9 +59,6 @@ object EnrichmentEngine {
         df.withColumn("_source._host", df.col("_source._host"))
         df.createOrReplaceTempView("dataFrame")
 
-//        val dfFiltered = df.select(col(""), when(col("host") === "NULL","")
-//          .when(col("tag") === "NULL",""))
-
         val dftemp = spark.sql("SELECT _source._host as host, " +
           "_source._logtype as logtype, " +
           "_source._mac as mac, " +
@@ -142,10 +139,8 @@ object EnrichmentEngine {
         .createTempView("logdna_datalake")
 
       val dftemp = spark.sql("SELECT * FROM logdna_datalake where datetime not like '%2019-11%'").toDF()
-//        .write.mode(SaveMode.Overwrite)
-//        .parquet(destPath)
-
-      val qtde = dftemp.count()
+        .write.mode(SaveMode.Overwrite)
+        .parquet("s3a://swap-bigdata/legacy/logdna_clean.parquet")
 
       processStatus = true
 
