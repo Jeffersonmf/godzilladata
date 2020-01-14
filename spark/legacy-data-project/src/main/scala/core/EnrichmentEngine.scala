@@ -128,7 +128,7 @@ object EnrichmentEngine {
     } finally {
 
       if (processStatus)
-        updateHistoryOfExecution(enrichmentFiles)
+        updateHistoryOfExecution(Nil)
     }
 
     processStatus
