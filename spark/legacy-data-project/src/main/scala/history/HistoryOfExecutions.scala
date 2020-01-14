@@ -4,11 +4,16 @@ import java.sql.Date
 
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.execution.streaming.FileStreamSource.Timestamp
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 import org.apache.spark.sql.functions.col
 import org.joda.time.DateTime
 
+case class ProcessedStackHistory(appName: String, fileSourceName: String, dateTime: DateTime)
+
 object HistoryOfExecutions {
+
+  //def
 
 //  /**
 //    * Salva na tabela de historico de execucoes as informacoes da atividade que foi executada

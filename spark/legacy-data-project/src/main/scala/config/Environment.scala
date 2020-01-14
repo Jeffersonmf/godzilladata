@@ -5,19 +5,19 @@ object Environment {
   val conf = com.typesafe.config.ConfigFactory.load()
 
   def getJsonSourceFolder(): String = {
-    conf.getString("Configuration.Enrichment.Json_SourceFolder")
+    conf.getString("Configuration.Local.Json_SourceFolder")
   }
 
   def getParquetDestinationFolder(): String = {
-    conf.getString("Configuration.Enrichment.Parquet_DestinationFolder")
+    conf.getString("Configuration.Local.Parquet_DestinationFolder")
   }
 
   def getPurgeDestinationFolder(): String = {
-    conf.getString("Configuration.Enrichment.Purge_DestinationFolder")
+    conf.getString("Configuration.Local.Purge_DestinationFolder")
   }
 
   def isRunningAWSMode(): Boolean = {
-    conf.getBoolean("Configuration.Setup.Running_Mode")
+    conf.getBoolean("Configuration.Setup.Running_AWS_Mode")
   }
 
   def aws_access_key(): String = {

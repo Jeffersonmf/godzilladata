@@ -4,6 +4,7 @@ import java.io.File
 
 import config.Environment
 import exceptions.LoadDataException
+import history.ProcessedStackHistory
 import org.apache.spark.sql
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions.lit
@@ -23,7 +24,7 @@ object EnrichmentEngine {
       .config("spark.some.config.option", true).getOrCreate()
   }
 
-  private def updateHistoryOfExecution(enrichmentFiles: List[File]) = {
+  private def updateHistoryOfExecution(processedFiles: List[ProcessedStackHistory]) = {
     //TODO: Calls here the history modules.
   }
 
@@ -44,12 +45,17 @@ object EnrichmentEngine {
 
   private def processInAWS(path: String): Boolean = {
     // For implicit conversions like converting RDDs to DataFrames
-
     var processStatus: Boolean = false
 
-    val sourcePath = Environment.get_AWS_JsonSourceFolder().concat(if (path != null) path else "")
+    //TODO: Colocar essa logica fora desse escopo...
+    val sourcePath = (if(Environment.isRunningAWSMode()) Environment
+      .get_AWS_JsonSourceFolder()
+    else Environment
+      .getJsonSourceFolder()).concat(if (path != null) path else "")
+
     val destPath = Environment.get_AWS_ParquetDestinationFolder()
 
+    //TODO: Melhorar aqui essa pilha de processamento, pois precisamos checar se os arquivos ja nao se encontram no historico de execuções...
     val enrichmentFiles = Utils.getListOfFiles(sourcePath)
 
       try {
@@ -87,7 +93,7 @@ object EnrichmentEngine {
     } finally {
 
       if (processStatus)
-        updateHistoryOfExecution(enrichmentFiles)
+        updateHistoryOfExecution(Nil)
     }
 
     processStatus

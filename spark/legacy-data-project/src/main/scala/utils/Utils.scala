@@ -14,6 +14,10 @@ object Utils {
     }
   }
 
+  def getListOfFilesRecursivelly(dir: String): List[File] = {
+   throw new NotImplementedError()
+  }
+
   def moveListOfFiles(source: String, destination: String, listFiles: List[File]): Boolean = {
     try {
       for (file <- listFiles) {
