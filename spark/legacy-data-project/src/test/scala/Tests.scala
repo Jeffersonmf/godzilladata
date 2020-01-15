@@ -12,17 +12,17 @@ class Tests extends FlatSpec with Matchers {
    */
   it should "return non-null String of destination folder value" in {
 
-    Environment.getParquetDestinationFolder() shouldNot be(null)
+    Environment.getParquetDestinationFolder(Environment.isRunningAWSMode()) shouldNot be(null)
   }
 
   it should "return non-null String of source Json folder value" in {
 
-    Environment.getJsonSourceFolder() shouldNot be(null)
+    Environment.getParquetDestinationFolder(Environment.isRunningAWSMode()) shouldNot be(null)
   }
 
   it should "return non-null String of purge folder value" in {
 
-    Environment.getPurgeDestinationFolder() shouldNot be(null)
+    Environment.getHistoryDestinationFolder(Environment.isRunningAWSMode()) shouldNot be(null)
   }
 
   //  it should "enrich the data in the source folder" in {

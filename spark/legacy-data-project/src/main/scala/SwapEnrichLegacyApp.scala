@@ -2,7 +2,6 @@ import akka.actor.ActorSystem
 import colossus.IOSystem
 import colossus.core.InitContext
 import colossus.protocols.http.server.{HttpServer, Initializer}
-import config.Environment
 import routers.HttpRouterHandler
 
 object SwapEnrichLegacyApp extends App {
@@ -12,9 +11,6 @@ object SwapEnrichLegacyApp extends App {
 
   //Initializing Enrichment Data with Spark.
   //EnrichmentEngine.chargeSourceData()
-
-  //Initializing File Watcher to the Enrichment future data.
-  val directoryPath = Environment.getJsonSourceFolder()
 
 //  val watcher = DirWatcher()
 //  watcher.watchFor(directoryPath, new EnrichmentFileListener())

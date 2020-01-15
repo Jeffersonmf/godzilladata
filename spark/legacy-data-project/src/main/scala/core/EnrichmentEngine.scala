@@ -44,21 +44,29 @@ object EnrichmentEngine {
   }
 
   private def processInAWS(path: String): Boolean = {
+    this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
+    this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
+
+    processAndChargeData(path)
+  }
+
+  private def processInLocalStorage(path: String): Boolean = {
+    processAndChargeData(path)
+  }
+
+  private def processAndChargeData(path: String): Boolean = {
     // For implicit conversions like converting RDDs to DataFrames
     var processStatus: Boolean = false
 
     //TODO: Colocar essa logica fora desse escopo...
-    val sourcePath = (if(Environment.isRunningAWSMode()) Environment
-      .get_AWS_JsonSourceFolder()
-    else Environment
-      .getJsonSourceFolder()).concat(if (path != null) path else "")
+    val sourcePath = Environment.getSourceFolder(Environment.isRunningAWSMode()).concat(if (path != null) path else "")
+    val destPath = Environment.getParquetDestinationFolder(Environment.isRunningAWSMode())
 
-    val destPath = Environment.get_AWS_ParquetDestinationFolder()
-
-    //TODO: Melhorar aqui essa pilha de processamento, pois precisamos checar se os arquivos ja nao se encontram no historico de execuções...
+    //TODO: Melhorar aqui essa pilha de processamento, pois precisamos
+    // checar se os arquivos ja nao se encontram no historico de execuções...
     val enrichmentFiles = Utils.getListOfFiles(sourcePath)
 
-      try {
+    try {
       if (!Utils.isSourceFolderEmpty(sourcePath)) {
         val df = spark.sqlContext.read.json(sourcePath)
         df.withColumn("_source._ts",  df.col("_source._ts").cast(sql.types.LongType))
@@ -99,44 +107,9 @@ object EnrichmentEngine {
     processStatus
   }
 
-  private def processInLocalStorage(path: String): Boolean = {
-    var processStatus: Boolean = false
-
-    val sourcePath = Environment.getJsonSourceFolder().concat(if (path != null) path else "")
-    val destPath = Environment.getParquetDestinationFolder()
-
-    val enrichmentFiles = Utils.getListOfFiles(sourcePath)
-
-    try {
-      if (!Utils.isSourceFolderEmpty(sourcePath)) {
-        val df = spark.read.format("json").json(sourcePath)
-
-        df.rdd.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
-        df.rdd.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
-
-        df.toDF()
-          .write
-          .mode(SaveMode.Append)
-          .parquet(destPath)
-
-        processStatus = true
-      }
-    } catch {
-      case e: Exception => {
-        throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
-      }
-    } finally {
-
-      if (processStatus)
-        updateHistoryOfExecution(Nil)
-    }
-
-    processStatus
-  }
-
   def deleteSourceData(complementPath: String): Boolean = {
     var processStatus: Boolean = false
-    val destPath = Environment.get_AWS_ParquetDestinationFolder()
+    val destPath = Environment.getParquetDestinationFolder(Environment.isRunningAWSMode())
 
     try {
 
