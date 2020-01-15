@@ -1,13 +1,10 @@
-![POD](https://img.shields.io/badge/version-v1.0.0-blue.svg)
-![POD](https://img.shields.io/badge/language-Scala-black.svg)
-![POD](https://img.shields.io/badge/Spark-red.svg)
-![POD](https://img.shields.io/badge/Amazon-EMR-orange.svg)
-![POD](https://img.shields.io/badge/license-MIT-lightgrey.svg)
-![SBT compatible](https://img.shields.io/badge/SBT-compatible-4BC51D.svg?style=flat)
+![POD](https://img.shields.io/badge/version-v1.0.0-blue.svg) ![POD](https://img.shields.io/badge/language-Scala-black.svg) ![POD](https://img.shields.io/badge/platform-Spark-red.svg) ![POD](https://img.shields.io/badge/Amazon-EMR-orange.svg) ![POD](https://img.shields.io/badge/license-MIT-lightgrey.svg) ![SBT compatible](https://img.shields.io/badge/SBT-compatible-4BC51D.svg?style=flat)
 
 # Godzilla
 
 Is the main project responsible for big data. 
+
+![Macro Big Data Flow](Big Data Macro Flow.jpg)
 
 # The first challenge to enrich data and insight experiments
 
@@ -42,16 +39,6 @@ Example:
 ```
 
 The total data set is divided and separated by year, month and day, where each day a batch of new records is generated.
-
-Within these files, the data is in JSON format, with each record delimited by a new line:
-
-```
-[
- {"_source":{"_host":"smaug-production","_logtype":"customapp","_mac":"02:33:73:62:79:XX","_tag":["smaug"],"_file":"/var/log/smaug-production.log","_line":"06:21:49.707 request_id=FduN5RMuPrzyERwAJZZZ application=heartcheck line=87 module=HeartCheck.Executor [info]  [HeartCheck] #Reference<0.2913399302.1440481281.3XX99> acg_api: OK - Time: 2341","_ts":1575008510050,"_app":"smaug-production.log","_ip":"10.0.2.169","_ipremote":"10.233.93.1XX","level":null,"_lid":"1153469293918777347"}}
- {"_source":{"_host":"ip-172-31-3-1XX","_logtype":"syslogline","_mac":"0e:0f:d6:bd:24:XX","_tag":["daenerys-staging"],"_file":"/var/log/messages","_line":"Nov 29 06:21:53 ip-172-31-3-1XX cloud-init: (no query)","_ts":1575008514XXX,"_app":"messages","_ip":"172.31.3.1XX","_ipremote":"147.75.38.1XX","level":null,"logsource":"ip-172-31-3-1XX","program":"cloud-init","message":"(no query)","_lid":"1153469311764111367"}}
- {"_source":{"_host":"ip-172-31-3-1XX","_logtype":"syslogline","_mac":"0e:0f:d6:bd:24:XX","_tag":["daenerys-staging"],"_file":"/var/log/messages","_line":"Nov 29 06:21:53 ip-172-31-3-1XX cloud-init: cache-control: no-store","_ts":1575008514XXX,"_app":"messages","_ip":"172.31.3.1XX","_ipremote":"147.75.38.1XX","level":null,"logsource":"ip-172-31-3-1XX","program":"cloud-init","message":"cache-control: no-store","_lid":"1153469311768305667"}}
-]
-```
 
 The result of this processing is to get a large amount of data converted, indexed and transformed into HDFS file systems using the Parquet algorithm.
 
@@ -125,7 +112,7 @@ Configuration {
         Purge_DestinationFolder="""/home/XXXXXXXXX/Project/Data/Purge"""
     }
 }
-```  
+```
 
 **It is VERY important that the above folders are pointed correctly on the machine in question.**
 
