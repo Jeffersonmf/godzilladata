@@ -22,6 +22,7 @@ object HistoryOfExecutions {
     import spark.implicits._
 
     val historyInParquet = spark.read.parquet(Environment.getHistoryDestinationFolder(Environment.isRunningAWSMode()))
+    val df = historyList.toDS().toDF()
 
     Nil
   }
