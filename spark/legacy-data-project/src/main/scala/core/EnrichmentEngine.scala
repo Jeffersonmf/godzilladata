@@ -5,13 +5,14 @@ import exceptions.LoadDataException
 import history.HistoryStackFile
 import org.apache.spark.sql
 import org.apache.spark.sql._
+import org.joda.time.DateTime
 import utils.Utils
 
 object EnrichmentEngine {
 
   val spark = sparkContextInitialize()
-  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
-  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
+//  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
+//  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
 
   private def sparkContextInitialize(): SparkSession = {
     SparkSession.builder
@@ -58,10 +59,13 @@ object EnrichmentEngine {
     val sourcePath = Environment.getSourceFolder(Environment.isRunningLocalMode()).concat(if (path != null) path else "")
     val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
 
-    //TODO: Melhorar aqui essa pilha de processamento, pois precisamos
-    // checar se os arquivos ja nao se encontram no historico de execuções...
-    val enrichmentFiles = Utils.getListOfFiles(sourcePath)
-    var names = enrichmentFiles.map(x => x.getName)
+    def scalaFiles =
+      for {
+        file <- Utils.getListOfFiles(sourcePath).map(name => name.getName)
+      } yield HistoryStackFile(appName = "LegacyLogDNA",
+                                fileSourceName = file,
+                                timestamp = DateTime.now().getMillis,
+                                dateTime = DateTime.now().toString)
 
     try {
       if (!Utils.isSourceFolderEmpty(sourcePath)) {
