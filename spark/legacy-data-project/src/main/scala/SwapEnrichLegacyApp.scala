@@ -9,13 +9,6 @@ object SwapEnrichLegacyApp extends App {
   implicit val actorSystem = ActorSystem()
   implicit val ioSystem = IOSystem()
 
-  //Initializing Enrichment Data with Spark.
-  //EnrichmentEngine.chargeSourceData()
-
-//  val watcher = DirWatcher()
-//  watcher.watchFor(directoryPath, new EnrichmentFileListener())
-//  watcher.start()
-
   HttpServer.start("Scala-Colossus", 9000){ context => new EnrichmentInitializer(context) }
 }
 

@@ -1,14 +1,10 @@
 package core
 
-import java.io.File
-
 import config.Environment
 import exceptions.LoadDataException
-import history.ProcessedStackHistory
+import history.HistoryStackFile
 import org.apache.spark.sql
 import org.apache.spark.sql._
-import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.types.StringType
 import utils.Utils
 
 object EnrichmentEngine {
@@ -24,7 +20,7 @@ object EnrichmentEngine {
       .config("spark.some.config.option", true).getOrCreate()
   }
 
-  private def updateHistoryOfExecution(processedFiles: List[ProcessedStackHistory]) = {
+  private def updateHistoryOfExecution(processedFiles: List[HistoryStackFile]) = {
     //TODO: Calls here the history modules.
   }
 
@@ -35,9 +31,9 @@ object EnrichmentEngine {
     if (Utils.isEmptyOrNull(pathComplement))
       return false
 
-      Environment.isRunningAWSMode() match {
-        case false => processStatus = this.processInLocalStorage(pathComplement)
-        case true => processStatus = this.processInAWS(pathComplement)
+      Environment.isRunningLocalMode() match {
+        case false => processStatus = this.processInAWS(pathComplement)
+        case true => processStatus = this.processInLocalStorage(pathComplement)
       }
 
     processStatus
@@ -59,12 +55,13 @@ object EnrichmentEngine {
     var processStatus: Boolean = false
 
     //TODO: Colocar essa logica fora desse escopo...
-    val sourcePath = Environment.getSourceFolder(Environment.isRunningAWSMode()).concat(if (path != null) path else "")
-    val destPath = Environment.getParquetDestinationFolder(Environment.isRunningAWSMode())
+    val sourcePath = Environment.getSourceFolder(Environment.isRunningLocalMode()).concat(if (path != null) path else "")
+    val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
 
     //TODO: Melhorar aqui essa pilha de processamento, pois precisamos
     // checar se os arquivos ja nao se encontram no historico de execuções...
     val enrichmentFiles = Utils.getListOfFiles(sourcePath)
+    var names = enrichmentFiles.map(x => x.getName)
 
     try {
       if (!Utils.isSourceFolderEmpty(sourcePath)) {
@@ -86,11 +83,11 @@ object EnrichmentEngine {
           "_source.level as level," +
           "_source._lid as lid" +
           " FROM dataFrame")
-          .withColumn("account", lit(null).cast(StringType))
-          .toDF()
-          .write.mode(SaveMode.Append)
-          //.partitionBy("logtype")
-          .parquet(destPath)
+//          .withColumn("account", lit(null).cast(StringType))
+//          .toDF()
+//          .write.mode(SaveMode.Append)
+//          //.partitionBy("logtype")
+//          .parquet(destPath)
 
         processStatus = true
       }
@@ -109,7 +106,7 @@ object EnrichmentEngine {
 
   def deleteSourceData(complementPath: String): Boolean = {
     var processStatus: Boolean = false
-    val destPath = Environment.getParquetDestinationFolder(Environment.isRunningAWSMode())
+    val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
 
     try {
 

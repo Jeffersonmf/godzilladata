@@ -6,12 +6,14 @@ object Environment {
 
   def getSourceFolder(isLocal: Boolean): String = {
     val sourceKey = if(isLocal) "Local" else "AWS"
-    conf.getString(s"Configuration.$sourceKey.Json_SourceFolder")
+    val configValue = s"Configuration.$sourceKey.SourceFolder"
+    conf.getString(configValue)
   }
 
   def getParquetDestinationFolder(isLocal: Boolean): String = {
     val sourceKey = if(isLocal) "Local" else "AWS"
-    conf.getString(s"Configuration.$sourceKey.Parquet_DestinationFolder")
+    val configValue = s"Configuration.$sourceKey.Parquet_DestinationFolder"
+    conf.getString(configValue)
   }
 
   def getHistoryDestinationFolder(isLocal: Boolean): String = {
@@ -19,8 +21,8 @@ object Environment {
     conf.getString(s"Configuration.$sourceKey.History_DestinationFolder")
   }
 
-  def isRunningAWSMode(): Boolean = {
-    conf.getBoolean("Configuration.Setup.Running_AWS_Mode")
+  def isRunningLocalMode(): Boolean = {
+    conf.getBoolean("Configuration.Setup.Running_Local_Mode")
   }
 
   def aws_access_key(): String = {
