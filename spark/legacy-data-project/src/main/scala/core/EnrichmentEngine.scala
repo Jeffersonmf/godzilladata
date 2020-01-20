@@ -2,7 +2,7 @@ package core
 
 import config.Environment
 import exceptions.LoadDataException
-import history.HistoryStackFile
+import history._
 import org.apache.spark.sql
 import org.apache.spark.sql._
 import org.joda.time.DateTime
@@ -23,7 +23,7 @@ object EnrichmentEngine {
 
   private def updateHistoryOfExecution(processedFiles: List[HistoryStackFile]) = {
     //TODO: Calls here the history modules.
-    
+    HistoryOfExecutions.updateHistoryOfExecution(processedFiles, spark)
   }
 
   def chargeSourceData(pathComplement: String): Boolean = {

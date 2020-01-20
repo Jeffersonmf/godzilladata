@@ -1,12 +1,10 @@
 package history
 
-import java.sql.Timestamp
-import java.time.LocalDate
-
 import config.Environment
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Encoders, SaveMode, SparkSession}
 import org.joda.time.DateTime
+import utils.Utils
 
 case class HistoryStackFile(appName: String, fileSourceName: String, timestamp: Long, dateTime: String)
 
@@ -25,30 +23,42 @@ object HistoryOfExecutions extends App {
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
 
-    val historyList = List(HistoryStackFile("aaaaa", "xxxx", 0, "2016-01-11 00:01:02")
-      ,HistoryStackFile("aaaaa", "xxxx", 0 ,"2016-01-11 00:01:02")
-      ,HistoryStackFile("aaaaa", "xxxx", 0, "2016-01-11 00:01:02"))
+    val historyList = List(HistoryStackFile("zzz", "8fa4fbf955.2019-11-04.72.ld72.json.gz", 0, "2016-01-11 00:01:02")
+      ,HistoryStackFile("xxx", "8fa4fbf955.2019-11-03.72.ld72.json.gz", 0 ,"2016-01-11 00:01:02")
+      ,HistoryStackFile("ccc", "ABC123456", 0, "2016-01-11 00:01:02"),HistoryStackFile("ccc", "ZXF232322323232", 0, "2016-01-11 00:01:02"))
 
-    this.checkHistoryOfExecution(historyList, spark.sparkContext, spark)
+    this.checkHistoryOfExecution("fileSourceName", historyList, spark.sparkContext, spark)
   }
 
-  def updateHistoryOfExecution(addToStackHistory: List[HistoryStackFile], sc: SparkContext, spark: SparkSession): Unit = {
-
-  }
-
-  def checkHistoryOfExecution(filesToStackProcess: List[HistoryStackFile], sc: SparkContext, spark: SparkSession): List[HistoryStackFile] = {
+  def updateHistoryOfExecution(addToStackHistory: List[HistoryStackFile], spark: SparkSession): Unit = {
     import spark.implicits._
 
-    val y = filesToStackProcess.toDF()
-//    val x = Seq(ProcessedStackHistory("aaaaa", "xxxx", DateTime.now()),ProcessedStackHistory("aaaaa", "xxxx", DateTime.now()),ProcessedStackHistory("aaaaa", "xxxx", DateTime.now())).toDF()
+    addToStackHistory.toDF()
+      .write.mode(SaveMode.Append)
+      .partitionBy("appName")
+      .parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
+  }
+
+  def checkHistoryOfExecution(columnKey: String, filesToStackProcess: List[HistoryStackFile], sc: SparkContext, spark: SparkSession): List[HistoryStackFile] = {
+    import spark.implicits._
 
     val historyInParquet = spark.read.parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
-    val df = filesToStackProcess.toDS().toDF()
+    val filesToAddIntoStack = filesToStackProcess.toDS().toDF()
 
-    //List(col1, col2, col3, col4).reduce((a, b) => a intersect b)
+    val result = historyInParquet.select(columnKey)
+      .intersect(filesToAddIntoStack.select(columnKey))
 
-    val list = sc.parallelize(List(("a1","b1","c1","d1"),("a2","b2","c2","d2"))).toDF()
+    val ItensASerRemovidos = result.as(Encoders.STRING).collectAsList
 
-    Nil
+    def filesToProcess =
+      for {
+        fileName <- filesToStackProcess.filter(i => !ItensASerRemovidos.toArray()
+          .toList.contains(i.fileSourceName))
+      } yield HistoryStackFile(appName = "LegacyLogDNA",
+        fileSourceName = fileName.toString(),
+        timestamp = DateTime.now().getMillis,
+        dateTime = DateTime.now().toString)
+
+    filesToProcess
   }
 }
