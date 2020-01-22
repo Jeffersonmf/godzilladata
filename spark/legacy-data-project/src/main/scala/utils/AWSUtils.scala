@@ -1,25 +1,21 @@
 package utils
-import awscala._, s3._
 
+import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
+import com.amazonaws.auth.{AWSStaticCredentialsProvider, BasicAWSCredentials}
+import com.amazonaws.services.s3.model.{ListObjectsRequest, ObjectListing}
 
 object AWSUtils {
 
-  implicit val s3 = S3.at(Region.US_EAST_2)
+  val credentials = new BasicAWSCredentials(config.Environment.aws_access_key, config.Environment.aws_secret_key)
+  val s3Client: AmazonS3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).build()
 
-//  val buckets: Seq[Bucket] = s3.buckets
-//  val bucket: Bucket = s3.createBucket("unique-name-xxx")
-//  val summaries: Seq[S3ObjectSummary] = bucket.objectSummaries
-//
-//  bucket.put("sample.txt", new java.io.File("sample.txt"))
-//
-//  val s3obj: Option[S3Object] = bucket.getObject("sample.txt")
-//
-//  s3obj.foreach { obj =>
-//    obj.publicUrl // http://unique-name-xxx.s3.amazonaws.com/sample.txt
-//    obj.generatePresignedUrl(DateTime.now.plusMinutes(10)) // ?Expires=....
-//    bucket.delete(obj) // or obj.destroy()
-//  }
+  def getFilesInS3Bucket(bucketName: String, prefix: String) = {
+    val objectListing: ObjectListing  = s3Client.listObjects(new ListObjectsRequest().
+      withBucketName(bucketName).
+      withPrefix(prefix));
 
+    objectListing.getCommonPrefixes()
+  }
 }
 
 

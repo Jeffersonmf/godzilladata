@@ -33,6 +33,12 @@ class HttpRouterHandler(context: ServerContext) extends RequestHandler(context) 
         case false => Callback.successful(request.ok("Path is invalid !!!"))
       }
     }
+    case request @ Get on Root / "charger" / bucketName / ano / mes => {
+      validate(ano,mes) match {
+        case true => Callback.successful(request.ok(ServicesImpl.chargeByBucket(bucketName, (ano+"/"+mes))))
+        case false => Callback.successful(request.ok("Path is invalid !!!"))
+      }
+    }
     case request @ Get on Root / "charger" / ano => {
       Callback.successful(request.ok(ServicesImpl.chargeByYear(ano)))
     }

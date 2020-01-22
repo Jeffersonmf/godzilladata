@@ -3,22 +3,34 @@ package utils
 import java.io.File
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
+import config.Environment
+
 object Utils {
 
-  def getListOfFiles(dir: String): List[File]= {
+  def getListFiles(bucketName: String, prefix: String): Seq[String] = {
+    var list = Seq[String]()
+    val x = AWSUtils.getFilesInS3Bucket(bucketName, prefix)
+    list
+  }
+
+  def getListLocalFiles(dir: String): List[String] = {
     val d = new File(dir)
     if (d.exists && d.isDirectory) {
       d.listFiles.filter(_.isFile).toList
     } else {
-      List[File]()
+      List[String]()
     }
+
+    val getNames = d.listFiles.filter(_.isFile).toList.map(x => x.getName).toList
+
+    getNames
   }
 
-  def getListOfFilesRecursivelly(dir: String): List[File] = {
+  private def getListOfFilesRecursivelly(dir: String): List[File] = {
    throw new NotImplementedError()
   }
 
-  def moveListOfFiles(source: String, destination: String, listFiles: List[File]): Boolean = {
+  private def moveListOfFiles(source: String, destination: String, listFiles: List[File]): Boolean = {
     try {
       for (file <- listFiles) {
         val path = Files.move(
@@ -35,8 +47,8 @@ object Utils {
     }
   }
 
-  def isSourceFolderEmpty(source: String): Boolean = {
-    return if (getListOfFiles(source).isEmpty) true else false
+  def isLocalSourceFolderEmpty(source: String): Boolean = {
+    return if (getListLocalFiles(source).isEmpty) true else false
   }
 
   def isEmptyOrNull(stringValue: String): Boolean = {

@@ -4,7 +4,6 @@ import config.Environment
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{Encoders, SaveMode, SparkSession}
 import org.joda.time.DateTime
-import utils.Utils
 
 case class HistoryStackFile(appName: String, fileSourceName: String, timestamp: Long, dateTime: String)
 
@@ -27,7 +26,7 @@ object HistoryOfExecutions extends App {
       ,HistoryStackFile("xxx", "8fa4fbf955.2019-11-03.72.ld72.json.gz", 0 ,"2016-01-11 00:01:02")
       ,HistoryStackFile("ccc", "ABC123456", 0, "2016-01-11 00:01:02"),HistoryStackFile("ccc", "ZXF232322323232", 0, "2016-01-11 00:01:02"))
 
-    this.checkHistoryOfExecution("fileSourceName", historyList, spark.sparkContext, spark)
+    this.checkHistoryOfExecution("fileSourceName", historyList, spark)
   }
 
   def updateHistoryOfExecution(addToStackHistory: List[HistoryStackFile], spark: SparkSession): Unit = {
@@ -39,7 +38,7 @@ object HistoryOfExecutions extends App {
       .parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
   }
 
-  def checkHistoryOfExecution(columnKey: String, filesToStackProcess: List[HistoryStackFile], sc: SparkContext, spark: SparkSession): List[HistoryStackFile] = {
+  def checkHistoryOfExecution(columnKey: String, filesToStackProcess: List[HistoryStackFile], spark: SparkSession): List[HistoryStackFile] = {
     import spark.implicits._
 
     val historyInParquet = spark.read.parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
@@ -48,11 +47,11 @@ object HistoryOfExecutions extends App {
     val result = historyInParquet.select(columnKey)
       .intersect(filesToAddIntoStack.select(columnKey))
 
-    val ItensASerRemovidos = result.as(Encoders.STRING).collectAsList
+    val itemsToRemove = result.as(Encoders.STRING).collectAsList
 
     def filesToProcess =
       for {
-        fileName <- filesToStackProcess.filter(i => !ItensASerRemovidos.toArray()
+        fileName <- filesToStackProcess.filter(i => !itemsToRemove.toArray()
           .toList.contains(i.fileSourceName))
       } yield HistoryStackFile(appName = "LegacyLogDNA",
         fileSourceName = fileName.toString(),

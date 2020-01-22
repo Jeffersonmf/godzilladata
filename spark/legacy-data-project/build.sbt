@@ -17,7 +17,9 @@ libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "2.4.4",
     "net.caoticode.dirwatcher" %% "dir-watcher" % "0.1.0",
     "com.github.seratch" %% "awscala" % "0.8.+",
     "com.amazonaws" % "aws-java-sdk" % "1.11.19",
-    "org.apache.hadoop" % "hadoop-aws" % "2.8.5"
+    "org.apache.hadoop" % "hadoop-aws" % "2.8.5",
+    "com.amazonaws" % "aws-java-sdk-bom" % "1.11.391",
+    "com.amazonaws" % "aws-java-sdk-s3"  % "1.11.391"
 )
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.8"

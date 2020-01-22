@@ -50,7 +50,14 @@ object ServicesImpl extends ServicesOperations {
   override def chargeByMonth(ano: String, mes: String): String = {
     val complementPath = ano.concat("/").concat(mes).concat("/")
 
-    EnrichmentEngine.chargeSourceData(complementPath) match {
+    EnrichmentEngine.chargeLocalSourceData(complementPath) match {
+      case true => "{Processed: \"OK\"}"
+      case false => "{Processed: \"ERROR\"}"
+    }
+  }
+
+  def chargeByBucket(bucketName: String, prefix: String): String = {
+    EnrichmentEngine.chargeS3Bucket(bucketName, prefix) match {
       case true => "{Processed: \"OK\"}"
       case false => "{Processed: \"ERROR\"}"
     }
