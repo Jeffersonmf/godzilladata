@@ -22,14 +22,13 @@ object HistoryOfExecutions extends App {
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
 
-    val historyList = List(HistoryStackFile("zzz", "8fa4fbf955.2019-11-04.72.ld72.json.gz", 0, "2016-01-11 00:01:02")
-      ,HistoryStackFile("xxx", "8fa4fbf955.2019-11-03.72.ld72.json.gz", 0 ,"2016-01-11 00:01:02")
-      ,HistoryStackFile("ccc", "ABC123456", 0, "2016-01-11 00:01:02"),HistoryStackFile("ccc", "ZXF232322323232", 0, "2016-01-11 00:01:02"))
+    val historyList = Seq("8fa4fbf955.2019-11-04.72.ld72.json.gz", "8fa4fbf955.2019-11-03.72.ld72.json.gz"
+      ,"ABC123456", "ZXF232322323232")
+    val zzz = this.checkHistoryOfExecution(historyList, spark)
 
-    this.checkHistoryOfExecution("fileSourceName", historyList, spark)
   }
 
-  def updateHistoryOfExecution(addToStackHistory: List[HistoryStackFile], spark: SparkSession): Unit = {
+  def updateHistoryOfExecution(addToStackHistory: Seq[HistoryStackFile], spark: SparkSession): Unit = {
     import spark.implicits._
 
     addToStackHistory.toDF()
@@ -38,26 +37,29 @@ object HistoryOfExecutions extends App {
       .parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
   }
 
-  def checkHistoryOfExecution(columnKey: String, filesToStackProcess: List[HistoryStackFile], spark: SparkSession): List[HistoryStackFile] = {
+  def checkHistoryOfExecution(filesToStackProcess: Seq[String], spark: SparkSession): Seq[String] = {
     import spark.implicits._
 
-    val historyInParquet = spark.read.parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
-    val filesToAddIntoStack = filesToStackProcess.toDS().toDF()
+    try {
+      val historyInParquet = spark.read.format("parquet").parquet(Environment.getHistoryDestinationFolder(Environment.isRunningLocalMode()))
+      val filesToAddIntoStack = filesToStackProcess.toDS().toDF()
 
-    val result = historyInParquet.select(columnKey)
-      .intersect(filesToAddIntoStack.select(columnKey))
+      val result = historyInParquet.select("fileSourceName")
+        .intersect(filesToAddIntoStack.select("value"))
 
-    val itemsToRemove = result.as(Encoders.STRING).collectAsList
+      val itemsToRemove = result.as(Encoders.STRING).collectAsList
 
-    def filesToProcess =
-      for {
-        fileName <- filesToStackProcess.filter(i => !itemsToRemove.toArray()
-          .toList.contains(i.fileSourceName))
-      } yield HistoryStackFile(appName = "LegacyLogDNA",
-        fileSourceName = fileName.toString(),
-        timestamp = DateTime.now().getMillis,
-        dateTime = DateTime.now().toString)
+      def filesToProcess =
+        for {
+          fileName <- filesToStackProcess.filter(filename => !itemsToRemove.toArray()
+            .toList.contains(filename))
+        } yield fileName.toString()
 
-    filesToProcess
+      filesToProcess
+    } catch {
+      case e: Exception => {
+        filesToStackProcess
+      }
+    }
   }
 }

@@ -23,7 +23,7 @@ object EnrichmentEngine {
       .config("spark.some.config.option", true).getOrCreate()
   }
 
-  private def updateHistoryOfExecution(processedFiles: List[HistoryStackFile]) = {
+  private def updateHistoryOfExecution(processedFiles: Seq[HistoryStackFile]) = {
     HistoryOfExecutions.updateHistoryOfExecution(processedFiles, spark)
   }
 
@@ -48,8 +48,10 @@ object EnrichmentEngine {
     val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
 
     try {
-      val filesToProcess: Seq[String] = Utils.getListFiles(bucketName, prefix)
-      //TODO: Checar e Filtrar do historico...
+      val filesToProcessX = HistoryOfExecutions.checkHistoryOfExecution(Utils.getListFiles(bucketName, prefix), spark)
+
+      val filesToProcess = Seq("s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-01.72.ld72.json.gz",
+      "s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-02.72.ld72.json.gz")
 
       val df = spark.read.json(filesToProcess:_*)
       df.withColumn("_source._ts", df.col("_source._ts").cast(sql.types.LongType))
@@ -69,32 +71,27 @@ object EnrichmentEngine {
         "_source.level as level," +
         "_source._lid as lid" +
         " FROM dataFrame")
-      //                  .withColumn("account", lit(null).cast(StringType))
-      //                  .toDF()
-      //                  .write.mode(SaveMode.Append)
-      //                  //.partitionBy("logtype")
-      //                  .parquet(destPath)
+        .withColumn("account", lit(null).cast(StringType))
+        .toDF()
+        .write.mode(SaveMode.Append)
+        //.partitionBy("logtype")
+        .parquet(destPath)
 
+      def addToHistory =
+          for {
+            fileName <- filesToProcess
+          } yield HistoryStackFile(appName = bucketName,
+            fileSourceName = fileName.toString(),
+            timestamp = DateTime.now().getMillis,
+            dateTime = DateTime.now().toString)
+
+        updateHistoryOfExecution(addToHistory)
       processStatus = true
     } catch {
       case e: Exception => {
         throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
       }
-    } finally {
-      if (processStatus) {
-        //TODO: Inserir aqui
-        //        def filesToProcess =
-        //          for {
-        //            "" <- List()
-        //          } yield HistoryStackFile(appName = "LegacyLogDNA",
-        //            fileSourceName = "",
-        //            timestamp = DateTime.now().getMillis,
-        //            dateTime = DateTime.now().toString)
-
-        updateHistoryOfExecution(Nil)
-      }
     }
-
     processStatus
   }
 
@@ -136,18 +133,12 @@ object EnrichmentEngine {
 //                  //.partitionBy("logtype")
 //                  .parquet(destPath)
 
-        processStatus = true
+        processStatus
     } catch {
       case e: Exception => {
         throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
       }
-    } finally {
-      if (processStatus) {
-        updateHistoryOfExecution(Nil)
-      }
     }
-
-    processStatus
   }
 
   def deleteSourceData(complementPath: String): Boolean = {
