@@ -48,9 +48,10 @@ object EnrichmentEngine {
     val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
 
     try {
-      val files: Seq[String] = Utils.getListFiles(bucketName, prefix)
+      val filesToProcess: Seq[String] = Utils.getListFiles(bucketName, prefix)
+      //TODO: Checar e Filtrar do historico...
 
-      val df = spark.read.json(files:_*)
+      val df = spark.read.json(filesToProcess:_*)
       df.withColumn("_source._ts", df.col("_source._ts").cast(sql.types.LongType))
       df.withColumn("_source._host", df.col("_source._host"))
       df.createOrReplaceTempView("dataFrame")
@@ -81,7 +82,7 @@ object EnrichmentEngine {
       }
     } finally {
       if (processStatus) {
-
+        //TODO: Inserir aqui
         //        def filesToProcess =
         //          for {
         //            "" <- List()

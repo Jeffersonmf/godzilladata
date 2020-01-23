@@ -8,9 +8,8 @@ import config.Environment
 object Utils {
 
   def getListFiles(bucketName: String, prefix: String): Seq[String] = {
-    var list = Seq[String]()
-    val x = AWSUtils.getFilesInS3Bucket(bucketName, prefix)
-    list
+    val listFilesOnS3 = AWSUtils.getFilesInS3Bucket(bucketName, prefix)
+    listFilesOnS3
   }
 
   def getListLocalFiles(dir: String): List[String] = {
@@ -21,8 +20,7 @@ object Utils {
       List[String]()
     }
 
-    val getNames = d.listFiles.filter(_.isFile).toList.map(x => x.getName).toList
-
+    val getNames = d.listFiles.filter(_.isFile).toList.map(x => x.getName)
     getNames
   }
 
