@@ -13,8 +13,8 @@ import utils.Utils
 object EnrichmentEngine {
 
   val spark = sparkContextInitialize()
-    this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
-    this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
+  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
+  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
 
   private def sparkContextInitialize(): SparkSession = {
     SparkSession.builder
@@ -48,36 +48,34 @@ object EnrichmentEngine {
     val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
 
     try {
-      val filesToProcessX = HistoryOfExecutions.checkHistoryOfExecution(Utils.getListFiles(bucketName, prefix), spark)
+      val filesToProcess = HistoryOfExecutions.checkHistoryOfExecution(Utils.getListFiles(bucketName, prefix), spark)
+      //      val filesToProcess = Seq("s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-01.72.ld72.json.gz",
+      //      "s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-02.72.ld72.json.gz")
+      if (filesToProcess.size > 0) {
+        val df = spark.read.json(filesToProcess: _*)
+        df.withColumn("_source._ts", df.col("_source._ts").cast(sql.types.LongType))
+        df.withColumn("_source._host", df.col("_source._host"))
+        df.createOrReplaceTempView("dataFrame")
 
-      val filesToProcess = Seq("s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-01.72.ld72.json.gz",
-      "s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-02.72.ld72.json.gz")
+        val dftemp = spark.sql("SELECT _source._host as host, " +
+          "_source._logtype as logtype, " +
+          "_source._mac as mac, " +
+          "_source._file as file, " +
+          "_source._line as line, " +
+          "_source._ts as ts, " +
+          "from_unixtime(_source._ts / 1000, \"yyyy-MM-dd HH:mm:ss.SSSS\") as datetime, " +
+          "_source._app as app," +
+          "_source._ip as ip," +
+          "_source._ipremote as ipremote," +
+          "_source.level as level," +
+          "_source._lid as lid" +
+          " FROM dataFrame")
+          .withColumn("account", lit(null).cast(StringType))
+          .toDF()
+          .write.mode(SaveMode.Append)
+          .parquet(destPath)
 
-      val df = spark.read.json(filesToProcess:_*)
-      df.withColumn("_source._ts", df.col("_source._ts").cast(sql.types.LongType))
-      df.withColumn("_source._host", df.col("_source._host"))
-      df.createOrReplaceTempView("dataFrame")
-
-      val dftemp = spark.sql("SELECT _source._host as host, " +
-        "_source._logtype as logtype, " +
-        "_source._mac as mac, " +
-        "_source._file as file, " +
-        "_source._line as line, " +
-        "_source._ts as ts, " +
-        "from_unixtime(_source._ts / 1000, \"yyyy-MM-dd HH:mm:ss.SSSS\") as datetime, " +
-        "_source._app as app," +
-        "_source._ip as ip," +
-        "_source._ipremote as ipremote," +
-        "_source.level as level," +
-        "_source._lid as lid" +
-        " FROM dataFrame")
-        .withColumn("account", lit(null).cast(StringType))
-        .toDF()
-        .write.mode(SaveMode.Append)
-        //.partitionBy("logtype")
-        .parquet(destPath)
-
-      def addToHistory =
+        def addToHistory =
           for {
             fileName <- filesToProcess
           } yield HistoryStackFile(appName = bucketName,
@@ -86,6 +84,8 @@ object EnrichmentEngine {
             dateTime = DateTime.now().toString)
 
         updateHistoryOfExecution(addToHistory)
+      }
+
       processStatus = true
     } catch {
       case e: Exception => {
@@ -109,31 +109,31 @@ object EnrichmentEngine {
     try {
       val files: Seq[String] = Utils.getListLocalFiles(path)
 
-        val df = spark.sqlContext.read.json(path);
-        df.withColumn("_source._ts", df.col("_source._ts").cast(sql.types.LongType))
-        df.withColumn("_source._host", df.col("_source._host"))
-        df.createOrReplaceTempView("dataFrame")
+      val df = spark.sqlContext.read.json(path);
+      df.withColumn("_source._ts", df.col("_source._ts").cast(sql.types.LongType))
+      df.withColumn("_source._host", df.col("_source._host"))
+      df.createOrReplaceTempView("dataFrame")
 
-        val dftemp = spark.sql("SELECT _source._host as host, " +
-          "_source._logtype as logtype, " +
-          "_source._mac as mac, " +
-          "_source._file as file, " +
-          "_source._line as line, " +
-          "_source._ts as ts, " +
-          "from_unixtime(_source._ts / 1000, \"yyyy-MM-dd HH:mm:ss.SSSS\") as datetime, " +
-          "_source._app as app," +
-          "_source._ip as ip," +
-          "_source._ipremote as ipremote," +
-          "_source.level as level," +
-          "_source._lid as lid" +
-          " FROM dataFrame")
-//                  .withColumn("account", lit(null).cast(StringType))
-//                  .toDF()
-//                  .write.mode(SaveMode.Append)
-//                  //.partitionBy("logtype")
-//                  .parquet(destPath)
+      val dftemp = spark.sql("SELECT _source._host as host, " +
+        "_source._logtype as logtype, " +
+        "_source._mac as mac, " +
+        "_source._file as file, " +
+        "_source._line as line, " +
+        "_source._ts as ts, " +
+        "from_unixtime(_source._ts / 1000, \"yyyy-MM-dd HH:mm:ss.SSSS\") as datetime, " +
+        "_source._app as app," +
+        "_source._ip as ip," +
+        "_source._ipremote as ipremote," +
+        "_source.level as level," +
+        "_source._lid as lid" +
+        " FROM dataFrame")
+      //                  .withColumn("account", lit(null).cast(StringType))
+      //                  .toDF()
+      //                  .write.mode(SaveMode.Append)
+      //                  //.partitionBy("logtype")
+      //                  .parquet(destPath)
 
-        processStatus
+      processStatus
     } catch {
       case e: Exception => {
         throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
