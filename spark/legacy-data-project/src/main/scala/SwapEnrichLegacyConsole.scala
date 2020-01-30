@@ -1,39 +1,30 @@
-package com.swap.datateam
+package com.contaswap.bigdata
 
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.{Encoders, SaveMode, SparkSession}
-import org.joda.time.DateTime
+import config.Environment
+import org.apache.spark.sql.SparkSession
 
-object SwapEnrichLegacyConsole extends App {
+object SwapEnrichLegacyConsole  {
 
-  final override def main(args: Array[String]): Unit = {
-    testSparkSubmit("main()")
+  import java.io.{File, PrintWriter}
+
+  import scala.io.Source
+
+  val spark = sparkContextInitialize()
+  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
+  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
+
+  private def sparkContextInitialize(): SparkSession = {
+    SparkSession.builder
+      .master("local")
+      .appName("SwapBigdataLegacy")
+      .config("spark.some.config.option", true).getOrCreate()
   }
 
-  def run(): Unit = {
-    testSparkSubmit("run()")
+  def main(args: Array[String]): Unit = {
+    testSparkSubmit("main()", args)
   }
 
-  final def start(): String = {
-    try {
-      testSparkSubmit("start()")
-      "Done..."
-    } catch {
-      case e: Exception =>
-        testSparkSubmit("start() com exceção")
-        "Done with Error..."
-    }
-  }
-
-  final private def exec(): Unit = {
-    testSparkSubmit("exec()")
-  }
-
-  private def testSparkSubmit(origem: String) = {
-
-    import scala.io.Source
-    import java.io.File
-    import java.io.PrintWriter
+  private def testSparkSubmit(origem: String, args: Array[String]) = {
 
     println("Processando...")
 
