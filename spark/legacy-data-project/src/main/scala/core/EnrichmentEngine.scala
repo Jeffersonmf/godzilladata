@@ -10,11 +10,11 @@ import org.apache.spark.sql.types.StringType
 import org.joda.time.DateTime
 import utils.Utils
 
-object EnrichmentEngine {
+object EnrichmentEngine  {
 
   val spark = sparkContextInitialize()
-  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
-  this.spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
+  spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
+  spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
 
   private def sparkContextInitialize(): SparkSession = {
     SparkSession.builder
