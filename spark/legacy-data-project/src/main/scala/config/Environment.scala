@@ -28,6 +28,18 @@ object Environment {
     conf.getString(configValue)
   }
 
+  def getFlashOrdersReturnFileSource(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.FlashOrders_ReturnFile_Source"
+    conf.getString(configValue)
+  }
+
+  def getFlashOrdersReturnFileDestination(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.FlashOrders_ReturnFile_Destination"
+    conf.getString(configValue)
+  }
+
   def getHistoryDestinationFolder(isLocal: Boolean): String = {
     val sourceKey = if(isLocal) "Local" else "AWS"
     conf.getString(s"Configuration.$sourceKey.History_DestinationFolder")

@@ -31,7 +31,7 @@ object ChargersAndExperiments extends SwapCoreBase {
         val df = spark.read.json(filesToProcess: _*)
         df.createOrReplaceTempView("dataFrame")
 
-        flex	food	life	go	endereco	bairro	cep	cidade	estado	destinatario
+        //flex	food	life	go	endereco	bairro	cep	cidade	estado	destinatario
 
 
         //TODO: Move this to the template file..
