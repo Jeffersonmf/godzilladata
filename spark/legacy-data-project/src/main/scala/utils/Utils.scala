@@ -3,12 +3,13 @@ package utils
 import java.io.File
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
+import awscala.Region
 import config.Environment
 
 object Utils {
 
-  def getListFiles(bucketName: String, prefix: String): Seq[String] = {
-    val listFilesOnS3 = AWSUtils.getFilesInS3Bucket(bucketName, prefix)
+  def getListFiles(bucketName: String, prefix: String, awsRegion: Region): Seq[String] = {
+    val listFilesOnS3 = AWSUtils.getFilesInS3Bucket(bucketName, prefix, awsRegion)
     listFilesOnS3
   }
 

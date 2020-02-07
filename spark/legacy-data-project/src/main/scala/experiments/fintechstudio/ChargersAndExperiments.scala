@@ -1,5 +1,6 @@
 package experiments.fintechstudio
 
+import com.amazonaws.regions.{Region, Regions}
 import config.Environment
 import core.EnrichmentEngine.spark
 import core.SwapCoreBase
@@ -13,19 +14,30 @@ import utils.Utils
 object ChargersAndExperiments extends SwapCoreBase {
 
   override def main(args: Array[String]): Unit = {
-    val sparkContext = super.getSparkContext()
-    val experimentName = getClassNameSimplified
 
-    val x = ""
+    if (args.nonEmpty && args.size > 1) {
+
+      val sparkContext = super.getSparkContext()
+      val experimentName = getClassNameSimplified
+      var bucketname = args(0)
+      var prefixFilter = args(1)
+
+      this.enrichOrdersFlashCards(bucketname, prefixFilter)
+
+      println(args(0))
+      println("\n")
+      println(args(1))
+    }
   }
 
   private def enrichOrdersFlashCards(bucketName: String, prefix: String): Boolean = {
     // For implicit conversions like converting RDDs to DataFrames
     var processStatus: Boolean = false
     val destPath = Environment.getFlashOrdersDestination(Environment.isRunningLocalMode())
+    val Swap_Customer_Experience_Region = Region.getRegion(Regions.US_EAST_2)
 
     try {
-      val filesToProcess = Utils.getListFiles(bucketName, prefix)
+      val filesToProcess = Utils.getListFiles(bucketName, prefix, Swap_Customer_Experience_Region)
 
       if (filesToProcess.size > 0) {
         val df = spark.read.json(filesToProcess: _*)

@@ -1,5 +1,6 @@
 package core
 
+import com.amazonaws.regions.{Region, Regions}
 import config.Environment
 import exceptions.LoadDataException
 import history._
@@ -46,9 +47,10 @@ object EnrichmentEngine  {
     import spark.implicits._
     var processStatus: Boolean = false
     val destPath = Environment.getParquetDestinationFolder(Environment.isRunningLocalMode())
+    val Swap_logDNA_Region = Region.getRegion(Regions.US_EAST_1)
 
     try {
-      val filesToProcess = HistoryOfExecutions.checkHistoryOfExecution(Utils.getListFiles(bucketName, prefix), spark)
+      val filesToProcess = HistoryOfExecutions.checkHistoryOfExecution(Utils.getListFiles(bucketName, prefix, Swap_logDNA_Region), spark)
       //      val filesToProcess = Seq("s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-01.72.ld72.json.gz",
       //      "s3a://swap-log-dna/2019/11/8fa4fbf955.2019-11-02.72.ld72.json.gz")
       if (filesToProcess.size > 0) {
