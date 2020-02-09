@@ -37,14 +37,14 @@ object ChargersAndExperiments extends SwapCoreBase {
     val Swap_Customer_Experience_Region = Region.getRegion(Regions.US_EAST_2)
 
     try {
-      val filesToProcess = Utils.getListFiles(bucketName, prefix, Swap_Customer_Experience_Region)
+      val filesToProcess = Utils.getListFiles(bucketName, prefix, Swap_Customer_Experience_Region).drop(1)
 
       if (filesToProcess.size > 0) {
-        val df = spark.read.json(filesToProcess: _*)
+
+        val df = spark.read.option("header", "true").csv(filesToProcess: _*)
         df.createOrReplaceTempView("dataFrame")
 
         //flex	food	life	go	endereco	bairro	cep	cidade	estado	destinatario
-
 
         //TODO: Move this to the template file..
         val dftemp = spark.sql("SELECT orderId, companyId, empresa, cnpj, " +
