@@ -86,9 +86,9 @@ object EnrichmentEngine  {
             dateTime = DateTime.now().toString)
 
         updateHistoryOfExecution(addToHistory)
-      }
 
-      processStatus = true
+        processStatus = true
+      }
     } catch {
       case e: Exception => {
         throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
@@ -156,15 +156,12 @@ object EnrichmentEngine  {
       val dftemp = spark.sql("SELECT * FROM logdna_datalake where datetime not like '%2019-11%'").toDF()
         .write.mode(SaveMode.Overwrite)
         .parquet("s3a://swap-bigdata/legacy/logdna_clean.parquet")
-
-      processStatus = true
-
     } catch {
       case e: Exception => {
         throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
       }
     } finally {
-      processStatus
+      processStatus = true
     }
 
     processStatus
