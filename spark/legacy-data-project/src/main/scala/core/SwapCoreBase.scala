@@ -1,6 +1,7 @@
 package core
 
 import config.Environment
+import experiments.fintechstudio.ChargersAndExperiments.getClassNameSimplified
 import org.apache.spark.sql.SparkSession
 
 class SwapCoreBase() extends App {
@@ -8,7 +9,7 @@ class SwapCoreBase() extends App {
   private def sparkContextInitialize(): SparkSession = {
     SparkSession.builder
       .master("local")
-      .appName("SwapBigdataLegacy")
+      .appName(getClassNameSimplified)
       .config("spark.some.config.option", true).getOrCreate()
   }
 
