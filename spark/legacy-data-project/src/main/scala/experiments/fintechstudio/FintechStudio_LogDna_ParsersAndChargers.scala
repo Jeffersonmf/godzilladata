@@ -9,7 +9,7 @@ import org.apache.spark.sql.functions.lit
 import org.apache.spark.sql.types.DateType
 import utils.Utils
 
-object ChargersAndExperiments extends SwapCoreBase {
+object FintechStudio_LogDna_ParsersAndChargers extends SwapCoreBase {
 
   def QUERY_TO_CHARGER_ORDERS_FLASHCARDS = {"SELECT orderId, companyId, empresa, cnpj, flex, food, life, go, endereco, bairro, cep, cidade, estado, destinatario FROM dataFrame"}
   def QUERY_TO_CHARGER_ORDERS_RETURN_FLASHCARDS = {"SELECT _c0 as orderId, _c1 as companyId, _c2 as Empresa, _c3 as account, _c4 as type, _c5 as trackcode, _c6 as datedelivery FROM dataFrame"}

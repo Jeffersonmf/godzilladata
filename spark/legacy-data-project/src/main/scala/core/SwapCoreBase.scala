@@ -1,7 +1,6 @@
 package core
 
 import config.Environment
-import experiments.fintechstudio.ChargersAndExperiments.getClassNameSimplified
 import org.apache.spark.sql.SparkSession
 
 class SwapCoreBase() extends App {
@@ -17,7 +16,6 @@ class SwapCoreBase() extends App {
     val spark = sparkContextInitialize()
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
-
     spark
   }
 
