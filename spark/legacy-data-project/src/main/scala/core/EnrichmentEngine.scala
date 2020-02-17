@@ -86,11 +86,12 @@ object EnrichmentEngine  {
             dateTime = DateTime.now().toString)
 
         updateHistoryOfExecution(addToHistory)
-
-        processStatus = true
       }
+
+      processStatus = true
     } catch {
       case e: Exception => {
+        processStatus = false
         throw new LoadDataException("Retorno do Processamento.: ".concat(false.toString).concat(" \n\nProblema no enriquecimento dos dados puros... Detalhes:".concat(e.getMessage)))
       }
     }
