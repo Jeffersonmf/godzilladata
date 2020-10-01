@@ -14,6 +14,10 @@ class SwapCoreBase() extends App {
 
   def getSparkContext(): SparkSession = {
     val spark = sparkContextInitialize()
+    spark.conf.set("spark.driver.memory", "16g")
+    spark.conf.set("spark.executor.memory", "16g")
+    spark.conf.set("spark.driver.maxResultSize","20g")
+    spark.conf.set("spark.cores.max", "4")
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.access.key", Environment.aws_access_key())
     spark.sparkContext.hadoopConfiguration.set("fs.s3a.secret.key", Environment.aws_secret_key())
     spark

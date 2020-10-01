@@ -1,14 +1,13 @@
 package experiments.fintechstudio
 
 import com.amazonaws.regions.{Region, Regions}
-import com.amazonaws.services.cognitosync.model.Dataset
 import config.Environment
-import core.EnrichmentEngine.spark
+import contracts.SchemaContracts
 import core.SwapCoreBase
 import exceptions.LoadDataException
-import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 import org.apache.spark.sql.functions.lit
-import org.apache.spark.sql.types.{DateType, DoubleType, IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.StringType
+import org.apache.spark.sql.{SaveMode, SparkSession}
 import utils.Utils
 
 object Orders_FlashCards_ChargersAndExperiments extends SwapCoreBase {
@@ -67,8 +66,6 @@ object Orders_FlashCards_ChargersAndExperiments extends SwapCoreBase {
   }
 
   private def add_FieldDate_intoS3_OrdersFlash(filesToProcess: Seq[String], sparkSession: SparkSession) = {
-    import scala.util.matching.Regex
-    import sparkSession.implicits._
     var processStatus: Boolean = false
     val destPath = Environment.getFlashOrdersDestination(Environment.isRunningLocalMode())
     try {
@@ -99,7 +96,6 @@ object Orders_FlashCards_ChargersAndExperiments extends SwapCoreBase {
   }
 
   private def enrich_Orders_FlashCards_ReturnedByFlash(bucketName: String, prefix: String, sparkSession: SparkSession): Boolean = {
-    import sparkSession.implicits._
     var processStatus: Boolean = false
     val destPath = Environment.getFlashOrdersReturnFileDestination(Environment.isRunningLocalMode())
     val Swap_Customer_Experience_Region = Region.getRegion(Regions.US_EAST_2)
@@ -109,11 +105,6 @@ object Orders_FlashCards_ChargersAndExperiments extends SwapCoreBase {
 
       if (filesToProcess.size > 0) {
         val df = sparkSession.read.option("header", "false").csv(filesToProcess: _*)
-        //        val rdd = df.rdd.mapPartitionsWithIndex{
-        //          case (index, iterator) => if(index==0) iterator.drop(1) else iterator
-        //        }
-        //        val dfFiltered = sparkSession.sqlContext.createDataFrame(rdd, df.schema)
-        //      dfFiltered.createOrReplaceTempView("dataFrame")
         df.createOrReplaceTempView("dataFrame")
         sparkSession.sql(QUERY_TO_CHARGER_ORDERS_RETURN_FLASHCARDS)
           .toDF()
@@ -136,7 +127,7 @@ object Orders_FlashCards_ChargersAndExperiments extends SwapCoreBase {
     val sourcePath = Environment.getFlashOrdersSource(Environment.isRunningLocalMode())
 
     try {
-      sparkSession.read.format("parquet").schema(contracts.ordersFlashSchema)
+      sparkSession.read.format("parquet").schema(SchemaContracts.ordersFlashSchema)
         .load(sourcePath)
         .createTempView("table_orders_flashcards")
 

@@ -1,6 +1,8 @@
+package contracts
+
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
 
-package object contracts {
+object SchemaContracts {
 
   def ordersFlashSchema = {StructType(Array(
     StructField("orderid", StringType, true),
@@ -19,5 +21,4 @@ package object contracts {
     StructField("destinatario", StringType, true),
     StructField("date", StringType, true))
   )}
-
 }

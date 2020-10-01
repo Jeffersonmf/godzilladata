@@ -40,9 +40,45 @@ object Environment {
     conf.getString(configValue)
   }
 
+  def getFlashExtractPagcorpDestination(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.Flash_Extract_Pagcorp_Destination"
+    conf.getString(configValue)
+  }
+
+  def getFlashExtractPagcorpSource(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.Flash_Extract_Pagcorp_Source"
+    conf.getString(configValue)
+  }
+
   def getHistoryDestinationFolder(isLocal: Boolean): String = {
     val sourceKey = if(isLocal) "Local" else "AWS"
     conf.getString(s"Configuration.$sourceKey.History_DestinationFolder")
+  }
+
+  def getRequestIDParserSource(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.RequestIDParser_Source"
+    conf.getString(configValue)
+  }
+
+  def getRequestIDParserDestination(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.RequestIDParser_Destination"
+    conf.getString(configValue)
+  }
+
+  def getLogDnaByLogtypeDestinationFolder(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.LogDna_By_Logtype_DestinationFolder"
+    conf.getString(configValue)
+  }
+
+  def getLogDnaByDateDestinationFolder(isLocal: Boolean): String = {
+    val sourceKey = if(isLocal) "Local" else "AWS"
+    val configValue = s"Configuration.$sourceKey.LogDna_By_Date_DestinationFolder"
+    conf.getString(configValue)
   }
 
   def isRunningLocalMode(): Boolean = {

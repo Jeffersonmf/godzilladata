@@ -1,6 +1,6 @@
 name := "Swap_BigData_Legacy"
 
-version := "0.1"
+version := "1.0"
 
 scalaVersion := "2.11.9"
 
@@ -17,6 +17,8 @@ resolvers in Global ++= Seq(
     "TypeSafe Repository Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 )
 
+resolvers += "Spark Packages Repo" at "http://dl.bintray.com/spark-packages/maven"
+
 resolvers += Resolver.bintrayIvyRepo("com.eed3si9n", "sbt-plugins")
 
 libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "2.4.4",
@@ -26,9 +28,9 @@ libraryDependencies ++= Seq("org.apache.spark" %% "spark-core" % "2.4.4",
     "net.caoticode.dirwatcher" %% "dir-watcher" % "0.1.0",
     "com.github.seratch" %% "awscala" % "0.8.+",
     "com.amazonaws" % "aws-java-sdk" % "1.11.19",
-    "org.apache.hadoop" % "hadoop-aws" % "2.8.5",
+    "org.apache.hadoop" % "hadoop-aws" % "2.8.3",
     "com.amazonaws" % "aws-java-sdk-bom" % "1.11.391",
-    "com.amazonaws" % "aws-java-sdk-s3"  % "1.11.391"
+    "com.amazonaws" % "aws-java-sdk-s3"  % "1.11.621"
 )
 
 libraryDependencies += "com.typesafe" % "config" % "1.3.1"

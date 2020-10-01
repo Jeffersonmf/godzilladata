@@ -135,3 +135,22 @@ The first run may need extra time to be ready, as all data must be enriched and 
 http://localhost:9000/monitoring
 ```
 
+# How execute the experiments inside EMR Spark context.
+
+```
+spark-submit \
+
+  --class org.apache.spark.examples.SparkPi \
+
+  --master yarn \
+
+  --deploy-mode cluster \  # can be client for client mode
+
+  --executor-memory 2G \
+
+  --num-executors 5 \
+
+  /path/to/examples.jar \
+
+  1000
+ ```
